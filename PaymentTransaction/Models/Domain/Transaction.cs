@@ -8,7 +8,7 @@ namespace PaymentTransaction.Models.Domain
 
   public class Transaction {
 
-    public required Guid Id { get; set; }
+    public Guid Id { get; set; }
     public required Guid ProviderId { get; set; }
     public required double Amount { get; set; }
     public required Guid CurrencyId { get; set; }
@@ -19,7 +19,11 @@ namespace PaymentTransaction.Models.Domain
     public required DateTime Timestamp { get; set; }
     public required string PayerEmail { get; set; }
 
-
+    // Constructor to initialize ProviderId with a new GUID
+    public Transaction()
+    {
+      Id = Guid.NewGuid();  // Automatically generate a new GUID
+    }
 
     // Property
     public required Provider Provider { get; set; }

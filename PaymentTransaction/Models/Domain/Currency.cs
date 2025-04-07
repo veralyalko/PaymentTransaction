@@ -6,8 +6,12 @@ namespace PaymentTransaction.Models.Domain
 
   public class Currency {
 
-    public required Guid CurrencyId { get; set; }
+    public Guid CurrencyId { get; set; }
     public required string CurrencyName { get; set; }
-    
+    // Constructor to initialize ProviderId with a new GUID
+    public Currency()
+    {
+      CurrencyId = Guid.NewGuid();  // Automatically generate a new GUID
+    }
   }
 }
