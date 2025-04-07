@@ -1,4 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using PaymentTransaction.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +11,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Db Class DI
+builder.Services.AddDbContext<PaymentTransactionDbContext>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("PaymentTransactionConnectionString")));
+
 
 var app = builder.Build();
 

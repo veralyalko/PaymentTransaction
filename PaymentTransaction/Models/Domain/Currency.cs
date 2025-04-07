@@ -6,8 +6,8 @@ namespace PaymentTransaction.Models.Domain
 
   public class Currency {
 
-    public Guid CurrencyId { get; set; }
-    public string CurrencyName { get; set; }
+    public required Guid CurrencyId { get; set; }
+    public required string CurrencyName { get; set; }
     
   }
 }

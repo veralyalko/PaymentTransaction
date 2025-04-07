@@ -6,8 +6,8 @@ namespace PaymentTransaction.Models.Domain
 
   public class Status {
 
-    public Guid StatusId { get; set; }
-    public string StatusName { get; set; }
+    public required Guid StatusId { get; set; }
+    public required string StatusName { get; set; }
     
   }
 }
