@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using PaymentTransaction.Data;
+using PaymentTransaction.Mappings;
+using PaymentTransaction.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<PaymentTransactionDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("PaymentTransactionConnectionString")));
 
+builder.Services.AddScoped<IProviderRepository, SQLProviderRepository>();
+
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 var app = builder.Build();
 

@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -5,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using PaymentTransaction.Data;
 using PaymentTransaction.Models.Domain;
 using PaymentTransaction.Models.DTO;
+using PaymentTransaction.Repositories;
 
 namespace PatmentTransactions.AddControllers
 {
@@ -14,10 +16,15 @@ namespace PatmentTransactions.AddControllers
   public class ProviderController: ControllerBase
   {
     private readonly PaymentTransactionDbContext dbContext;  
+    private readonly IProviderRepository providerRepository;
 
-    public ProviderController(PaymentTransactionDbContext dbContext)
+    private readonly IMapper mapper;
+    public ProviderController(PaymentTransactionDbContext dbContext, IProviderRepository providerRepository, 
+      IMapper mapper)
     {
         this.dbContext = dbContext;
+        this.providerRepository = providerRepository;
+        this.mapper = mapper;
     }
 
     // Get All Providers
@@ -26,19 +33,22 @@ namespace PatmentTransactions.AddControllers
     public async Task<IActionResult> GetAll()
     {
       // Get Data from Database - Domain Models
-      var providers = await dbContext.Provider.ToListAsync();
+      var providers = await providerRepository.GetAllAsync();
 
       // Map Domains to DTOs
-      var providerDto = new List<ProviderDto>();
-      foreach (var provider in providers) 
-      {
-          providerDto.Add(new ProviderDto()
-          {
-              ProviderId = provider.ProviderId,
-              ProviderName = provider.ProviderName
-          });
-      }
+      // var providerDto = new List<ProviderDto>();
+      // foreach (var provider in providers) 
+      // {
+      //     providerDto.Add(new ProviderDto()
+      //     {
+      //         ProviderId = provider.ProviderId,
+      //         ProviderName = provider.ProviderName
+      //     });
+      // }
 
+      // Map Domains to DTOs (automapper)
+      var providerDto = mapper.Map<List<ProviderDto>>(providers);
+      
       // Return DTO
       return Ok(providerDto);
 
@@ -51,18 +61,21 @@ namespace PatmentTransactions.AddControllers
     public async Task<IActionResult> GetById(Guid id)
     {
       // Get Provider Model From DB
-      var provider = await dbContext.Provider.FirstOrDefaultAsync(x => x.ProviderId == id);
+      var provider = await providerRepository.GetByIdAsync(id);
       if(provider == null)
       {
         return NotFound();
       }
 
-      // Map Provider Model to Provider DTO
-      var providerDto = new ProviderDto
-      {
-           ProviderId = provider.ProviderId,
-            ProviderName = provider.ProviderName
-      };
+      // // Map Provider Model to Provider DTO
+      // var providerDto = new ProviderDto
+      // {
+      //      ProviderId = provider.ProviderId,
+      //       ProviderName = provider.ProviderName
+      // };
+
+      // Map Domains to DTOs (automapper)
+      var providerDto = mapper.Map<ProviderDto>(provider);
 
        // Return DTO
       return Ok(providerDto);
@@ -74,21 +87,15 @@ namespace PatmentTransactions.AddControllers
     [HttpPost]
     public async Task<IActionResult> Create([FromBody]  AddProviderRequestDto addProviderRequestDto)
     {
-      // Map DTO to Model
-      var providerDomainModel = new Provider
-      {
-        ProviderName = addProviderRequestDto.ProviderName,
-      };
+      // Map DTO to Model (automapper)
+      var providerDomainModel = mapper.Map<Provider>(addProviderRequestDto);
+
 
       // Use Domain MOdel to create Provider
-      await dbContext.Provider.AddAsync(providerDomainModel);
-      await dbContext.SaveChangesAsync();
+      providerDomainModel = await providerRepository.CreateAsync(providerDomainModel);
 
-      // Map Model back to DTO
-      var providerDto =  new ProviderDto{
-        ProviderId = providerDomainModel.ProviderId,
-        ProviderName = providerDomainModel.ProviderName
-      };
+      // Map Domains to DTOs (automapper)
+      var providerDto = mapper.Map<ProviderDto>(providerDomainModel);
 
       return CreatedAtAction(nameof(GetById), new { id = providerDto.ProviderId}, providerDto);
     }
@@ -97,27 +104,23 @@ namespace PatmentTransactions.AddControllers
     // PUT: https://localhost:7042/api/providers/{id}
     [HttpPut]
     [Route("{id:Guid}")]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateProviderRequestDto UpdateProviderRequestDto)
+    public async Task<IActionResult> Update([FromRoute] Guid id, 
+      [FromBody] UpdateProviderRequestDto updateProviderRequestDto)
     {
+      // Map DTO to Model (automapper)
+      var providerDomainModel = mapper.Map<Provider>(updateProviderRequestDto);
+
       // Check for provider exists
-      var providerDomainModel = await dbContext.Provider.FirstOrDefaultAsync(x => x.ProviderId == id);
+      // var providerDomainModel = await dbContext.Provider.FirstOrDefaultAsync(x => x.ProviderId == id);
+      providerDomainModel = await providerRepository.UpdateAsync(id, providerDomainModel);
 
       if (providerDomainModel == null)
       {
         return NotFound();
       }
 
-      // Map Dto to Model
-      providerDomainModel.ProviderName = UpdateProviderRequestDto.ProviderName;
-
-      await dbContext.SaveChangesAsync();
-
-      // Convert Mode to DTO
-      var providerDto = new ProviderDto
-      {
-        ProviderId = providerDomainModel.ProviderId,
-        ProviderName = providerDomainModel.ProviderName
-      };
+      // Map Domains to DTOs (automapper)
+      var providerDto = mapper.Map<ProviderDto>(providerDomainModel);
 
       return Ok(providerDto);
     }
@@ -129,25 +132,17 @@ namespace PatmentTransactions.AddControllers
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
       // Check for provider exists
-      var providerDomainModel = await dbContext.Provider.FirstOrDefaultAsync(x => x.ProviderId == id);
+      // var providerDomainModel = await dbContext.Provider.FirstOrDefaultAsync(x => x.ProviderId == id);
+      var providerDomainModel = await providerRepository.DeleteAsync(id);
 
       if (providerDomainModel == null)
       {
         return NotFound();
       }
 
-      dbContext.Provider.Remove(providerDomainModel);
-      await dbContext.SaveChangesAsync();
-
       // Return deleted provider
-      // Map Model to DTO
-
-      // Convert Mode to DTO
-      var providerDto = new ProviderDto
-      {
-        ProviderId = providerDomainModel.ProviderId,
-        ProviderName = providerDomainModel.ProviderName
-      };
+      // Map Domains to DTOs (automapper)
+      var providerDto = mapper.Map<ProviderDto>(providerDomainModel);
 
       return Ok(providerDto);
     }
