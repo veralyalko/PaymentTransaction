@@ -9,7 +9,7 @@ using PaymentTransaction.Models.DTO;
 using PaymentTransaction.Repositories;
 using System.Text.Json;
 
-namespace PatmentTransactions.AddControllers
+namespace PaymentTransactions.Controllers
 {
   // https://localhost:7042/api/providers
   [Route("api/[controller]")]

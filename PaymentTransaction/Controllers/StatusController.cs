@@ -8,7 +8,7 @@ using PaymentTransaction.Models.Domain;
 using PaymentTransaction.Models.DTO;
 using PaymentTransaction.Repositories;
 
-namespace PatmentTransactions.AddControllers
+namespace PaymentTransactions.Controllers
 {
   // https://localhost:7042/api/status
   [Route("api/[controller]")]
