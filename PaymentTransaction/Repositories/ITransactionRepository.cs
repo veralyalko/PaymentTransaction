@@ -9,6 +9,7 @@ namespace PaymentTransaction.Repositories
     Task<Transaction?> GetByIdAsync(Guid id);
     Task<Transaction?> DeleteAsync(Guid id);
     Task<Transaction?> UpdateAsync(Guid id, Transaction transaction);
+    Task<Transaction?> CreateForProviderAsync(string providerName, Transaction transaction);
 
   }
 }

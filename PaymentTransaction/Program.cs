@@ -30,6 +30,16 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 var app = builder.Build();
 
+// Dev Ex Page
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage(); // ← put it right here
+}
+else
+{
+    app.UseExceptionHandler("/error");
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

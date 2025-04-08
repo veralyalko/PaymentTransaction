@@ -25,6 +25,27 @@ namespace PaymentTransaction.Repositories
       return await dbContext.Transaction.Include("Provider").Include("Currency").Include("PaymentMethod").Include("Status").ToListAsync();
     }
 
+    public async Task<Transaction?> CreateForProviderAsync(string providerName, Transaction transaction)
+    {
+      await dbContext.Transaction.AddAsync(transaction);
+      await dbContext.SaveChangesAsync();
+      // Reload with related entities
+
+      return await dbContext.Transaction
+          .Include(t => t.Provider)
+          .Include(t => t.Currency)
+          .Include(t => t.PaymentMethod)
+          .Include(t => t.Status)
+          .SingleOrDefaultAsync(t => t.Id == transaction.Id);
+
+      // return await dbContext.Transaction
+      //     .Include(t => t.Provider)
+      //     .Include(t => t.Currency)
+      //     .Include(t => t.PaymentMethod)
+      //     .Include(t => t.Status)
+      //     .SingleOrDefaultAsync(t => t.Provider.ProviderName == providerName);
+    }
+
     public async Task<Transaction?> GetByIdAsync(Guid id)
     {
       return await dbContext.Transaction.Include("Provider").Include("Currency").Include("PaymentMethod").Include("Status").SingleOrDefaultAsync(x => x.Id == id);
@@ -54,7 +75,6 @@ namespace PaymentTransaction.Repositories
             return null;
       }
 
-      // TODO
       existingTransaction.Amount = transaction.Amount;
       existingTransaction.PayerEmail = transaction.PayerEmail;
       existingTransaction.Timestamp = transaction.Timestamp;
@@ -65,6 +85,7 @@ namespace PaymentTransaction.Repositories
       await dbContext.SaveChangesAsync();
       return existingTransaction;
     }
+
     
 
   }

@@ -21,6 +21,11 @@ namespace PaymentTransaction.Repositories
       return await dbContext.Provider.SingleOrDefaultAsync(x => x.ProviderId == id);
     }
 
+    public async Task<Provider?> GetByNameAsync(string name)
+    {
+      return await dbContext.Provider.SingleOrDefaultAsync(x => x.ProviderName == name);
+    }
+
     public async Task<Provider> CreateAsync(Provider provider)
     {
       await dbContext.Provider.AddAsync(provider);

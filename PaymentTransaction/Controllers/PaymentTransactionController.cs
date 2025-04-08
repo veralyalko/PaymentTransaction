@@ -1,8 +1,5 @@
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using PaymentTransaction.Data;
 using PaymentTransaction.Models.Domain;
 using PaymentTransaction.Models.DTO;
@@ -11,25 +8,54 @@ using PaymentTransaction.Repositories;
 namespace PatmentTransactions.AddControllers
 {
   // https://localhost:7042/api/transactions
-  [Route("api/[controller]")]
+  [Route("transactions")]
   [ApiController]
   public class PaymentTransactionController: ControllerBase
   {
     private readonly PaymentTransactionDbContext dbContext;  
     private readonly ITransactionRepository transactionRepository;
+    private readonly IProviderRepository providerRepository;
     private readonly IMapper mapper;
 
     public PaymentTransactionController(PaymentTransactionDbContext dbContext, 
         ITransactionRepository transactionRepository, 
+        IProviderRepository providerRepository,
         IMapper mapper)
     {
         this.dbContext = dbContext;
         this.transactionRepository = transactionRepository;
+        this.providerRepository = providerRepository;
         this.mapper = mapper;
     }
 
+    // POST /ingest/{providerName}
+    [HttpPost("~/ingest/{providerName}")]
+    public async Task<IActionResult> CreateForProviderAsync(string providerName, [FromBody] AddTransactionViaProviderNameDto addTransactionViaProviderNameDto)
+    {
+        // Accepts raw transaction payloads from a specific provider
+        var provider = await providerRepository.GetByNameAsync(providerName);
+        if (provider == null)
+        {
+            return NotFound($"Provider '{providerName}' not found.");
+        }
+
+        // Map DTO to Model (automapper)
+        var transactionDomainModel = mapper.Map<Transaction>(addTransactionViaProviderNameDto);
+        transactionDomainModel.Timestamp = DateTime.UtcNow;
+        transactionDomainModel.ProviderId = provider.ProviderId;
+
+
+        // Use Domain MOdel to create Transaction
+        transactionDomainModel = await transactionRepository.CreateForProviderAsync(providerName, transactionDomainModel);
+
+        // Map Domains to DTOs (automapper)
+        var transactionDto = mapper.Map<TransactionDto>(transactionDomainModel);
+
+        return CreatedAtAction(nameof(GetById), new { id = transactionDto.Id}, transactionDto);
+    }
+
     // POST To create a new Transaction
-    // POST: https://localhost:7042/api/transactions
+    // POST: https://localhost:7042/transactions
     [HttpPost]
     public async Task<IActionResult> Create([FromBody]  AddTransactionRequestDto addTransactionRequestDto)
     {
@@ -48,7 +74,7 @@ namespace PatmentTransactions.AddControllers
 
 
     // Get All transactions
-    // GET: https://localhost:7042/api/transactions
+    // GET: https://localhost:7042/transactions
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -64,9 +90,9 @@ namespace PatmentTransactions.AddControllers
     }
 
     // Get Transaction by ID
-    // GET: https://localhost:7042/api/transactions/{id}
-    [HttpGet]
-    [Route("{id:Guid}")]
+    // GET: https://localhost:7042/transactions/{id}
+    // GET /transactions/{id}
+    [HttpGet("{id:Guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
       // Get Transaction Model From DB
@@ -85,9 +111,9 @@ namespace PatmentTransactions.AddControllers
     }
 
     // Update transaction
-    // PUT: https://localhost:7042/api/transactions/{id}
-    [HttpPut]
-    [Route("{id:Guid}")]
+    // PUT: https://localhost:7042/transactions/{id}
+    // PUT /transactions/{id}
+    [HttpPut("{id:Guid}")]
     public async Task<IActionResult> Update([FromRoute] Guid id, 
       [FromBody] UpdateTransactionRequestDto updateTransactionRequestDto)
     {
@@ -109,9 +135,9 @@ namespace PatmentTransactions.AddControllers
     }
 
     // Delete transaction
-    // DELETE: https://localhost:7042/api/transactions/{id}
-    [HttpDelete]
-    [Route("{id:Guid}")]
+    // DELETE: https://localhost:7042/transactions/{id}
+    // DELETE /transactions/{id}
+    [HttpDelete("{id:Guid}")]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
       // Check for transaction exists

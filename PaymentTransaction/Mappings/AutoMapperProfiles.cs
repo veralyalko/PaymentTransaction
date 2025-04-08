@@ -31,6 +31,7 @@ namespace PaymentTransaction.Mappings
       // Payment Transaction Automapper
       CreateMap<Transaction, TransactionDto>().ReverseMap();
       CreateMap<AddTransactionRequestDto, Transaction>().ReverseMap();
+      CreateMap<AddTransactionViaProviderNameDto, Transaction>().ReverseMap();
       CreateMap<UpdateTransactionRequestDto, Transaction>().ReverseMap();
     }
 
