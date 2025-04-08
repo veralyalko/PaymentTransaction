@@ -2,6 +2,7 @@ using System.Globalization;
 using Microsoft.Net.Http.Headers;
 using PaymentTransaction.Models.Domain;
 using Swashbuckle.AspNetCore.Annotations;
+using PaymentTransaction.Attributes;
 
 namespace PaymentTransaction.Models.DTO
 {

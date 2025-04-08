@@ -7,9 +7,17 @@ namespace PaymentTransaction.Repositories
   public class SQLTransactionRepository : ITransactionRepository
   {
     private readonly PaymentTransactionDbContext dbContext;
+
     public SQLTransactionRepository(PaymentTransactionDbContext dbContext)
     {
       this.dbContext = dbContext;
+    }
+    
+    public async Task<Transaction?> GetByIdempotencyKeyAsync(string idempotencyKey)
+    {
+        var transaction = await dbContext.Transaction
+            .FirstOrDefaultAsync(t => t.IdempotencyKey == idempotencyKey);
+        return transaction;
     }
     
     public async Task<Transaction> CreateAsync(Transaction transaction)

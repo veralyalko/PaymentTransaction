@@ -5,6 +5,7 @@ using PaymentTransaction.Data;
 using PaymentTransaction.Models.Domain;
 using PaymentTransaction.Models.DTO;
 using PaymentTransaction.Repositories;
+using PaymentTransaction.Attributes;
 
 namespace PatmentTransactions.AddControllers
 {
@@ -29,43 +30,88 @@ namespace PatmentTransactions.AddControllers
         this.mapper = mapper;
     }
 
-    // POST /ingest/{providerName}
-    [HttpPost("~/ingest/{providerName}")]
-    [ValidateModel]
-    public async Task<IActionResult> CreateForProviderAsync(string providerName, [FromBody] AddTransactionViaProviderNameDto addTransactionViaProviderNameDto)
+[HttpPost("~/ingest/{providerName}")]
+[RequiresIdempotencyKeyHeader]
+[TypeFilter(typeof(IdempotencyFilter))]
+[ValidateModel]
+public async Task<IActionResult> CreateForProviderAsync(
+    string providerName,
+    [FromBody] AddTransactionViaProviderNameDto addTransactionViaProviderNameDto)
+{
+    // Cleaned-up version: idempotency is now handled by the filter!
+
+    // Validate providerName
+    if (string.IsNullOrWhiteSpace(providerName))
     {
-        // Validate providerName
-        if (string.IsNullOrWhiteSpace(providerName))
-        {
-            return BadRequest("Provider name is required.");
-        }
-
-        if (providerName.Length > 50)
-        {
-            return BadRequest("Provider name must be 50 characters or fewer.");
-        }
-
-        // Accepts raw transaction payloads from a specific provider
-        var provider = await providerRepository.GetByNameAsync(providerName);
-        if (provider == null)
-        {
-            return NotFound($"Provider '{providerName}' not found.");
-        }
-
-        // Map DTO to Model (automapper)
-        var transactionDomainModel = mapper.Map<Transaction>(addTransactionViaProviderNameDto);
-        transactionDomainModel.Timestamp = DateTime.UtcNow;
-        transactionDomainModel.ProviderId = provider.ProviderId;
-
-
-        // Use Domain MOdel to create Transaction
-        transactionDomainModel = await transactionRepository.CreateForProviderAsync(providerName, transactionDomainModel);
-
-        // Map Domains to DTOs (automapper)
-        var transactionDto = mapper.Map<TransactionDto>(transactionDomainModel);
-
-        return CreatedAtAction(nameof(GetById), new { id = transactionDto.Id}, transactionDto);
+        return BadRequest("Provider name is required.");
     }
+
+    if (providerName.Length > 50)
+    {
+        return BadRequest("Provider name must be 50 characters or fewer.");
+    }
+
+    var provider = await providerRepository.GetByNameAsync(providerName);
+    if (provider == null)
+    {
+        return NotFound($"Provider '{providerName}' not found.");
+    }
+
+    var transactionDomainModel = mapper.Map<Transaction>(addTransactionViaProviderNameDto);
+    transactionDomainModel.Timestamp = DateTime.UtcNow;
+    transactionDomainModel.ProviderId = provider.ProviderId;
+
+    // Get the idempotency key from headers again (trusting filter already validated it)
+    var idempotencyKey = Request.Headers["Idempotency-Key"].ToString();
+    transactionDomainModel.IdempotencyKey = idempotencyKey;
+
+    transactionDomainModel = await transactionRepository.CreateForProviderAsync(providerName, transactionDomainModel);
+
+    var newTransactionDto = mapper.Map<TransactionDto>(transactionDomainModel);
+
+    return CreatedAtAction(nameof(GetById), new { id = newTransactionDto.Id }, newTransactionDto);
+}
+
+
+    // // POST /ingest/{providerName}
+    // [HttpPost("~/ingest/{providerName}")]
+    // [ValidateModel]
+    // public async Task<IActionResult> CreateForProviderAsync(string providerName, [FromBody] AddTransactionViaProviderNameDto addTransactionViaProviderNameDto)
+    // {
+
+    
+    //     // Validate providerName
+    //     if (string.IsNullOrWhiteSpace(providerName))
+    //     {
+    //         return BadRequest("Provider name is required.");
+    //     }
+
+    //     if (providerName.Length > 50)
+    //     {
+    //         return BadRequest("Provider name must be 50 characters or fewer.");
+    //     }
+
+    //     // Accepts raw transaction payloads from a specific provider
+    //     var provider = await providerRepository.GetByNameAsync(providerName);
+    //     if (provider == null)
+    //     {
+    //         return NotFound($"Provider '{providerName}' not found.");
+    //     }
+
+    //     // Map DTO to Model (automapper)
+    //     var transactionDomainModel = mapper.Map<Transaction>(addTransactionViaProviderNameDto);
+    //     transactionDomainModel.Timestamp = DateTime.UtcNow;
+    //     transactionDomainModel.ProviderId = provider.ProviderId;
+
+
+    //     // Use Domain MOdel to create Transaction
+    //     transactionDomainModel = await transactionRepository.CreateForProviderAsync(providerName, transactionDomainModel);
+
+    //     // Map Domains to DTOs (automapper)
+    //     var transactionDto = mapper.Map<TransactionDto>(transactionDomainModel);
+
+    //     return CreatedAtAction(nameof(GetById), new { id = transactionDto.Id}, transactionDto);
+    // }
 
     // POST To create a new Transaction
     // POST: https://localhost:7042/transactions

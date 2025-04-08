@@ -30,6 +30,7 @@ namespace PaymentTransaction.Models.Domain
     public required Currency Currency { get; set; }
     public required PaymentMethod PaymentMethod { get; set; }
     public required Status Status { get; set; }
+    public required string IdempotencyKey { get; set; }
     
   }
 }

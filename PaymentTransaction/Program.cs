@@ -5,6 +5,7 @@ using PaymentTransaction.Data;
 using PaymentTransaction.Mappings;
 using PaymentTransaction.Repositories;
 using System.Reflection;
+using PaymentTransaction.Attributes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.EnableAnnotations(); // Enable processing of Swagger annotations
+
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
@@ -28,11 +30,20 @@ builder.Services.AddSwaggerGen(options =>
     // Include XML comments if you have them
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
-    options.IncludeXmlComments(xmlPath);
+    if (File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
 
     // Register the custom schema filter
     options.SchemaFilter<SwaggerSchemaExampleFilter>();
+
+    // ✅ Register the operation filter that adds Idempotency-Key to Swagger UI
+    options.OperationFilter<AddIdempotencyKeyHeaderParameter>();
 });
+
+// Register IdempotencyFilter
+builder.Services.AddScoped<IdempotencyFilter>();
 
 // Db Class DI
 builder.Services.AddDbContext<PaymentTransactionDbContext>(options =>

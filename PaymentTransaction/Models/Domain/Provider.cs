@@ -1,5 +1,6 @@
 
 using Swashbuckle.AspNetCore.Annotations;
+using PaymentTransaction.Attributes;
 
 namespace PaymentTransaction.Models.Domain
 {
