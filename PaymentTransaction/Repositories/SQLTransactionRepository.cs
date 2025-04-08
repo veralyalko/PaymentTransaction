@@ -22,12 +22,12 @@ namespace PaymentTransaction.Repositories
 
     public async Task<List<Transaction>> GetAllAsync()
     {
-      return await dbContext.Transaction.ToListAsync();
+      return await dbContext.Transaction.Include("Provider").Include("Currency").Include("PaymentMethod").Include("Status").ToListAsync();
     }
 
     public async Task<Transaction?> GetByIdAsync(Guid id)
     {
-      return await dbContext.Transaction.SingleOrDefaultAsync(x => x.Id == id);
+      return await dbContext.Transaction.Include("Provider").Include("Currency").Include("PaymentMethod").Include("Status").SingleOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<Transaction?> DeleteAsync(Guid id)
