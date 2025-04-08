@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,7 @@ namespace PaymentTransactions.Controllers
     // Get All Currencies
     // GET: https://localhost:7042/api/currencies
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetAll()
     {
       // Get Data from Database - Domain Models

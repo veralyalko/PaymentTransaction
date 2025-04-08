@@ -5,7 +5,7 @@ namespace PaymentTransaction.Data
 {
     public class PaymentTransactionDbContext: DbContext
     {
-        public PaymentTransactionDbContext(DbContextOptions DbContextOptions): base(DbContextOptions)
+        public PaymentTransactionDbContext(DbContextOptions<PaymentTransactionDbContext> DbContextOptions): base(DbContextOptions)
         {
 
         }

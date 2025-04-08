@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ namespace PaymentTransactions.Controllers
   // https://localhost:7042/api/providers
   [Route("api/[controller]")]
   [ApiController]
+  // [Authorize]
   public class ProviderController: ControllerBase
   {
     private readonly PaymentTransactionDbContext dbContext;  
