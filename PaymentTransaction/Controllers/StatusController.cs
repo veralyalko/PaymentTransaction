@@ -69,17 +69,24 @@ namespace PatmentTransactions.AddControllers
     [HttpPost]
     public async Task<IActionResult> Create([FromBody]  AddStatusRequestDto addStatusRequestDto)
     {
-      // Map DTO to Model (automapper)
-      var statusDomainModel = mapper.Map<Status>(addStatusRequestDto);
+      if (ModelState.IsValid) 
+      {
+        // Map DTO to Model (automapper)
+        var statusDomainModel = mapper.Map<Status>(addStatusRequestDto);
 
 
-      // Use Domain MOdel to create Provider
-      statusDomainModel = await statusRepository.CreateAsync(statusDomainModel);
+        // Use Domain MOdel to create Provider
+        statusDomainModel = await statusRepository.CreateAsync(statusDomainModel);
 
-      // Map Domains to DTOs (automapper)
-      var statusDto = mapper.Map<StatusDto>(statusDomainModel);
+        // Map Domains to DTOs (automapper)
+        var statusDto = mapper.Map<StatusDto>(statusDomainModel);
 
-      return CreatedAtAction(nameof(GetById), new { id = statusDto.StatusId}, statusDto);
+        return CreatedAtAction(nameof(GetById), new { id = statusDto.StatusId}, statusDto);
+      }
+      else
+      {
+        return BadRequest(ModelState);
+      }
     }
 
     // Update status
@@ -89,21 +96,28 @@ namespace PatmentTransactions.AddControllers
     public async Task<IActionResult> Update([FromRoute] Guid id, 
       [FromBody] UpdateStatusRequestDto updateStatusRequestDto)
     {
-      // Map DTO to Model (automapper)
-      var statusDomainModel = mapper.Map<Status>(updateStatusRequestDto);
-
-      // Check for status exists
-      statusDomainModel = await statusRepository.UpdateAsync(id, statusDomainModel);
-
-      if (statusDomainModel == null)
+      if (ModelState.IsValid)
       {
-        return NotFound();
+        // Map DTO to Model (automapper)
+        var statusDomainModel = mapper.Map<Status>(updateStatusRequestDto);
+
+        // Check for status exists
+        statusDomainModel = await statusRepository.UpdateAsync(id, statusDomainModel);
+
+        if (statusDomainModel == null)
+        {
+          return NotFound();
+        }
+
+        // Map Domains to DTOs (automapper)
+        var statusDto = mapper.Map<StatusDto>(statusDomainModel);
+
+        return Ok(statusDto);
       }
-
-      // Map Domains to DTOs (automapper)
-      var statusDto = mapper.Map<StatusDto>(statusDomainModel);
-
-      return Ok(statusDto);
+      else
+      {
+        return BadRequest(ModelState);
+      }
     }
 
     // Delete status

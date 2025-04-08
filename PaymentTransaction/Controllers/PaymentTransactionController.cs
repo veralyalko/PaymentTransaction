@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using PaymentTransaction.CustomActionFilters;
 using PaymentTransaction.Data;
 using PaymentTransaction.Models.Domain;
 using PaymentTransaction.Models.DTO;
@@ -30,8 +31,20 @@ namespace PatmentTransactions.AddControllers
 
     // POST /ingest/{providerName}
     [HttpPost("~/ingest/{providerName}")]
+    [ValidateModel]
     public async Task<IActionResult> CreateForProviderAsync(string providerName, [FromBody] AddTransactionViaProviderNameDto addTransactionViaProviderNameDto)
     {
+        // Validate providerName
+        if (string.IsNullOrWhiteSpace(providerName))
+        {
+            return BadRequest("Provider name is required.");
+        }
+
+        if (providerName.Length > 50)
+        {
+            return BadRequest("Provider name must be 50 characters or fewer.");
+        }
+        
         // Accepts raw transaction payloads from a specific provider
         var provider = await providerRepository.GetByNameAsync(providerName);
         if (provider == null)
@@ -57,6 +70,7 @@ namespace PatmentTransactions.AddControllers
     // POST To create a new Transaction
     // POST: https://localhost:7042/transactions
     [HttpPost]
+    [ValidateModel]
     public async Task<IActionResult> Create([FromBody]  AddTransactionRequestDto addTransactionRequestDto)
     {
       // Map DTO to Model (automapper)
@@ -114,6 +128,7 @@ namespace PatmentTransactions.AddControllers
     // PUT: https://localhost:7042/transactions/{id}
     // PUT /transactions/{id}
     [HttpPut("{id:Guid}")]
+    [ValidateModel]
     public async Task<IActionResult> Update([FromRoute] Guid id, 
       [FromBody] UpdateTransactionRequestDto updateTransactionRequestDto)
     {

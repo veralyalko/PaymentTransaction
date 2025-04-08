@@ -69,17 +69,24 @@ namespace PatmentTransactions.AddControllers
     [HttpPost]
     public async Task<IActionResult> Create([FromBody]  AddCurrencyRequestDto addCurrencyRequestDto)
     {
-      // Map DTO to Model (automapper)
-      var currencyDomainModel = mapper.Map<Currency>(addCurrencyRequestDto);
+      if (ModelState.IsValid)
+      {
+        // Map DTO to Model (automapper)
+        var currencyDomainModel = mapper.Map<Currency>(addCurrencyRequestDto);
 
 
-      // Use Domain MOdel to create Currency
-      currencyDomainModel = await currencyRepository.CreateAsync(currencyDomainModel);
+        // Use Domain MOdel to create Currency
+        currencyDomainModel = await currencyRepository.CreateAsync(currencyDomainModel);
 
-      // Map Domains to DTOs (automapper)
-      var currencyDto = mapper.Map<CurrencyDto>(currencyDomainModel);
+        // Map Domains to DTOs (automapper)
+        var currencyDto = mapper.Map<CurrencyDto>(currencyDomainModel);
 
-      return CreatedAtAction(nameof(GetById), new { id = currencyDto.CurrencyId}, currencyDto);
+        return CreatedAtAction(nameof(GetById), new { id = currencyDto.CurrencyId}, currencyDto);
+      }
+      else
+      {
+        return BadRequest(ModelState);
+      }
     }
 
     // Update currency
@@ -89,21 +96,28 @@ namespace PatmentTransactions.AddControllers
     public async Task<IActionResult> Update([FromRoute] Guid id, 
       [FromBody] UpdateCurrencyRequestDto updateCurrencyRequestDto)
     {
-      // Map DTO to Model (automapper)
-      var currencyDomainModel = mapper.Map<Currency>(updateCurrencyRequestDto);
-
-      // Check for currency exists
-      currencyDomainModel = await currencyRepository.UpdateAsync(id, currencyDomainModel);
-
-      if (currencyDomainModel == null)
+      if (ModelState.IsValid) 
       {
-        return NotFound();
+        // Map DTO to Model (automapper)
+        var currencyDomainModel = mapper.Map<Currency>(updateCurrencyRequestDto);
+
+        // Check for currency exists
+        currencyDomainModel = await currencyRepository.UpdateAsync(id, currencyDomainModel);
+
+        if (currencyDomainModel == null)
+        {
+          return NotFound();
+        }
+
+        // Map Domains to DTOs (automapper)
+        var currencyDto = mapper.Map<CurrencyDto>(currencyDomainModel);
+
+        return Ok(currencyDto);
       }
-
-      // Map Domains to DTOs (automapper)
-      var currencyDto = mapper.Map<CurrencyDto>(currencyDomainModel);
-
-      return Ok(currencyDto);
+      else
+      {
+        return BadRequest(ModelState);
+      }
     }
 
     // Delete currency

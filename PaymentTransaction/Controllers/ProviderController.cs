@@ -87,6 +87,9 @@ namespace PatmentTransactions.AddControllers
     [HttpPost]
     public async Task<IActionResult> Create([FromBody]  AddProviderRequestDto addProviderRequestDto)
     {
+
+      if(ModelState.IsValid)
+      {
       // Map DTO to Model (automapper)
       var providerDomainModel = mapper.Map<Provider>(addProviderRequestDto);
 
@@ -98,6 +101,11 @@ namespace PatmentTransactions.AddControllers
       var providerDto = mapper.Map<ProviderDto>(providerDomainModel);
 
       return CreatedAtAction(nameof(GetById), new { id = providerDto.ProviderId}, providerDto);
+      }
+      else
+      {
+        return BadRequest(ModelState);
+      }
     }
 
     // Update provider
@@ -107,22 +115,28 @@ namespace PatmentTransactions.AddControllers
     public async Task<IActionResult> Update([FromRoute] Guid id, 
       [FromBody] UpdateProviderRequestDto updateProviderRequestDto)
     {
-      // Map DTO to Model (automapper)
-      var providerDomainModel = mapper.Map<Provider>(updateProviderRequestDto);
+      if (ModelState.IsValid) {
+        // Map DTO to Model (automapper)
+        var providerDomainModel = mapper.Map<Provider>(updateProviderRequestDto);
 
-      // Check for provider exists
-      // var providerDomainModel = await dbContext.Provider.FirstOrDefaultAsync(x => x.ProviderId == id);
-      providerDomainModel = await providerRepository.UpdateAsync(id, providerDomainModel);
+        // Check for provider exists
+        // var providerDomainModel = await dbContext.Provider.FirstOrDefaultAsync(x => x.ProviderId == id);
+        providerDomainModel = await providerRepository.UpdateAsync(id, providerDomainModel);
 
-      if (providerDomainModel == null)
-      {
-        return NotFound();
+        if (providerDomainModel == null)
+        {
+          return NotFound();
+        }
+
+        // Map Domains to DTOs (automapper)
+        var providerDto = mapper.Map<ProviderDto>(providerDomainModel);
+
+        return Ok(providerDto);
       }
-
-      // Map Domains to DTOs (automapper)
-      var providerDto = mapper.Map<ProviderDto>(providerDomainModel);
-
-      return Ok(providerDto);
+      else
+      {
+        return BadRequest(ModelState);
+      }
     }
 
     // Delete provider

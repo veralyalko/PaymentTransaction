@@ -69,17 +69,23 @@ namespace PatmentTransactions.AddControllers
     [HttpPost]
     public async Task<IActionResult> Create([FromBody]  AddPaymentMethodRequestDto addPaymentMethodRequestDto)
     {
-      // Map DTO to Model (automapper)
-      var paymentMethodDomainModel = mapper.Map<PaymentMethod>(addPaymentMethodRequestDto);
+      if (ModelState.IsValid) {
+        // Map DTO to Model (automapper)
+        var paymentMethodDomainModel = mapper.Map<PaymentMethod>(addPaymentMethodRequestDto);
 
 
-      // Use Domain MOdel to create Payment Method
-      paymentMethodDomainModel = await paymentMethodRepository.CreateAsync(paymentMethodDomainModel);
+        // Use Domain MOdel to create Payment Method
+        paymentMethodDomainModel = await paymentMethodRepository.CreateAsync(paymentMethodDomainModel);
 
-      // Map Domains to DTOs (automapper)
-      var paymentMethodDto = mapper.Map<PaymentMethodDto>(paymentMethodDomainModel);
+        // Map Domains to DTOs (automapper)
+        var paymentMethodDto = mapper.Map<PaymentMethodDto>(paymentMethodDomainModel);
 
-      return CreatedAtAction(nameof(GetById), new { id = paymentMethodDto.PaymentMethodId}, paymentMethodDto);
+        return CreatedAtAction(nameof(GetById), new { id = paymentMethodDto.PaymentMethodId}, paymentMethodDto);
+      }
+      else
+      {
+        return BadRequest(ModelState);
+      }
     }
 
     // Update Payment Method
@@ -89,21 +95,27 @@ namespace PatmentTransactions.AddControllers
     public async Task<IActionResult> Update([FromRoute] Guid id, 
       [FromBody] UpdatePaymentMethodRequestDto updatePaymentMethodRequestDto)
     {
-      // Map DTO to Model (automapper)
-      var paymentMethodDomainModel = mapper.Map<PaymentMethod>(updatePaymentMethodRequestDto);
+      if (ModelState.IsValid) {
+        // Map DTO to Model (automapper)
+        var paymentMethodDomainModel = mapper.Map<PaymentMethod>(updatePaymentMethodRequestDto);
 
-      // Check for Payment Method exists
-      paymentMethodDomainModel = await paymentMethodRepository.UpdateAsync(id, paymentMethodDomainModel);
+        // Check for Payment Method exists
+        paymentMethodDomainModel = await paymentMethodRepository.UpdateAsync(id, paymentMethodDomainModel);
 
-      if (paymentMethodDomainModel == null)
-      {
-        return NotFound();
+        if (paymentMethodDomainModel == null)
+        {
+          return NotFound();
+        }
+
+        // Map Domains to DTOs (automapper)
+        var paymentMethodDto = mapper.Map<PaymentMethodDto>(paymentMethodDomainModel);
+
+        return Ok(paymentMethodDto);
       }
-
-      // Map Domains to DTOs (automapper)
-      var paymentMethodDto = mapper.Map<PaymentMethodDto>(paymentMethodDomainModel);
-
-      return Ok(paymentMethodDto);
+      else
+      {
+        return BadRequest(ModelState);
+      }
     }
 
     // Delete Payment Method
