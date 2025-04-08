@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PaymentTransaction.Data;
 
@@ -11,9 +12,11 @@ using PaymentTransaction.Data;
 namespace PaymentTransaction.Migrations
 {
     [DbContext(typeof(PaymentTransactionDbContext))]
-    partial class PaymentTransactionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250408032903_FixTransactionPaymentMethodRelation2")]
+    partial class FixTransactionPaymentMethodRelation2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,7 +101,11 @@ namespace PaymentTransaction.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("PaymentMethodId")
+                    b.Property<string>("PaymentMethodId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PaymentMethodId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ProviderId")
@@ -114,7 +121,7 @@ namespace PaymentTransaction.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.HasIndex("PaymentMethodId");
+                    b.HasIndex("PaymentMethodId1");
 
                     b.HasIndex("ProviderId");
 
@@ -133,7 +140,7 @@ namespace PaymentTransaction.Migrations
 
                     b.HasOne("PaymentTransaction.Models.Domain.PaymentMethod", "PaymentMethod")
                         .WithMany()
-                        .HasForeignKey("PaymentMethodId")
+                        .HasForeignKey("PaymentMethodId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PaymentTransaction.Data;
 
@@ -11,9 +12,11 @@ using PaymentTransaction.Data;
 namespace PaymentTransaction.Migrations
 {
     [DbContext(typeof(PaymentTransactionDbContext))]
-    partial class PaymentTransactionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250408032445_FixTransactionPaymentMethodRelation")]
+    partial class FixTransactionPaymentMethodRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,13 +101,21 @@ namespace PaymentTransaction.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("PaymentMethodId")
+                    b.Property<string>("PaymentMethodId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PaymentMethodId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ProviderId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("StatusId")
+                    b.Property<string>("StatusId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("StatusId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("Timestamp")
@@ -114,11 +125,11 @@ namespace PaymentTransaction.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.HasIndex("PaymentMethodId");
+                    b.HasIndex("PaymentMethodId1");
 
                     b.HasIndex("ProviderId");
 
-                    b.HasIndex("StatusId");
+                    b.HasIndex("StatusId1");
 
                     b.ToTable("Transaction");
                 });
@@ -133,7 +144,7 @@ namespace PaymentTransaction.Migrations
 
                     b.HasOne("PaymentTransaction.Models.Domain.PaymentMethod", "PaymentMethod")
                         .WithMany()
-                        .HasForeignKey("PaymentMethodId")
+                        .HasForeignKey("PaymentMethodId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -145,7 +156,7 @@ namespace PaymentTransaction.Migrations
 
                     b.HasOne("PaymentTransaction.Models.Domain.Status", "Status")
                         .WithMany()
-                        .HasForeignKey("StatusId")
+                        .HasForeignKey("StatusId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

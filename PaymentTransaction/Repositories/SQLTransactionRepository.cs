@@ -11,6 +11,15 @@ namespace PaymentTransaction.Repositories
     {
       this.dbContext = dbContext;
     }
+    
+    public async Task<Transaction> CreateAsync(Transaction transaction)
+    {
+      await dbContext.Transaction.AddAsync(transaction);
+      await dbContext.SaveChangesAsync();
+
+      return transaction;
+    }
+
     public async Task<List<Transaction>> GetAllAsync()
     {
       return await dbContext.Transaction.ToListAsync();
@@ -19,14 +28,6 @@ namespace PaymentTransaction.Repositories
     public async Task<Transaction?> GetByIdAsync(Guid id)
     {
       return await dbContext.Transaction.SingleOrDefaultAsync(x => x.Id == id);
-    }
-
-    public async Task<Transaction> CreateAsync(Transaction transaction)
-    {
-      await dbContext.Transaction.AddAsync(transaction);
-      await dbContext.SaveChangesAsync();
-
-      return transaction;
     }
 
     public async Task<Transaction?> DeleteAsync(Guid id)

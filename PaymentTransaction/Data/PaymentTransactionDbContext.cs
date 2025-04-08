@@ -15,7 +15,16 @@ namespace PaymentTransaction.Data
         public DbSet<Provider> Provider { get; set; }
         public DbSet<Status> Status { get; set; }
         public DbSet<Transaction> Transaction { get; set; }
-       
+       // 👇 Method to configure Timestamp
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Transaction>()
+                .Property(t => t.Timestamp)
+                .IsRequired()
+                .ValueGeneratedNever(); 
+
+            base.OnModelCreating(modelBuilder);
+        }
 
     }
 }
