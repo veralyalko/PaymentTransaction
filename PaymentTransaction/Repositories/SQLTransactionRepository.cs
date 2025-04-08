@@ -20,9 +20,53 @@ namespace PaymentTransaction.Repositories
       return transaction;
     }
 
-    public async Task<List<Transaction>> GetAllAsync()
+    public async Task<List<Transaction>> GetAllAsync(
+      string? filterOn = null, 
+      string? filterQuery = null,
+      DateTime? fromDate = null,
+      DateTime? toDate = null)
     {
-      return await dbContext.Transaction.Include("Provider").Include("Currency").Include("PaymentMethod").Include("Status").ToListAsync();
+      var transaction = dbContext.Transaction
+        .Include(t => t.Provider)
+        .Include(t => t.Currency)
+        .Include(t => t.PaymentMethod)
+        .Include(t => t.Status)
+        .AsQueryable();
+
+        // Apply filter if not null
+        if (!string.IsNullOrWhiteSpace(filterOn) && !string.IsNullOrWhiteSpace(filterQuery))
+        {
+            // by ProviderName
+            if (filterOn.Equals("providerName", StringComparison.OrdinalIgnoreCase))
+            {
+                transaction = transaction.Where(t => t.Provider.ProviderName.Contains(filterQuery));
+            }
+
+            // by Status
+            if (filterOn.Equals("Status", StringComparison.OrdinalIgnoreCase))
+            {
+                transaction = transaction.Where(t => t.Status.StatusName.Contains(filterQuery));
+            }
+
+
+        }
+
+        // Filter Date range (from/to)
+        if (fromDate.HasValue)
+        {
+            transaction = transaction.Where(t => t.Timestamp >= fromDate.Value);
+        }
+
+        if (toDate.HasValue)
+        {
+            var inclusiveTo = toDate.Value.Date.AddDays(1).AddTicks(-1); // include full day
+            transaction = transaction.Where(t => t.Timestamp <= inclusiveTo);
+        }
+
+
+
+      return await transaction.ToListAsync();
+
     }
 
     public async Task<Transaction?> CreateForProviderAsync(string providerName, Transaction transaction)

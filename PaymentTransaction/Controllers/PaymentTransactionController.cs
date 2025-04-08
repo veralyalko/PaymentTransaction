@@ -44,7 +44,7 @@ namespace PatmentTransactions.AddControllers
         {
             return BadRequest("Provider name must be 50 characters or fewer.");
         }
-        
+
         // Accepts raw transaction payloads from a specific provider
         var provider = await providerRepository.GetByNameAsync(providerName);
         if (provider == null)
@@ -90,10 +90,14 @@ namespace PatmentTransactions.AddControllers
     // Get All transactions
     // GET: https://localhost:7042/transactions
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(
+      [FromQuery] string? filterOn,
+      [FromQuery] string? filterQuery,
+      [FromQuery] DateTime? fromDate,
+      [FromQuery] DateTime? toDate)
     {
       // Get Data from Database - Domain Models
-      var transaction = await transactionRepository.GetAllAsync();
+      var transaction = await transactionRepository.GetAllAsync(filterOn, filterQuery, fromDate, toDate);
 
       // Map Domains to DTOs (automapper)
       var transactionDto = mapper.Map<List<TransactionDto>>(transaction);
