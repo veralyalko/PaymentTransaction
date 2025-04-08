@@ -22,6 +22,11 @@ namespace PaymentTransaction.Mappings
       CreateMap<PaymentMethod, PaymentMethodDto>().ReverseMap();
       CreateMap<AddPaymentMethodRequestDto, PaymentMethod>().ReverseMap();
       CreateMap<UpdatePaymentMethodRequestDto, PaymentMethod>().ReverseMap();
+
+      // Status Automapper
+      CreateMap<Status, StatusDto>().ReverseMap();
+      CreateMap<AddStatusRequestDto, Status>().ReverseMap();
+      CreateMap<UpdateStatusRequestDto, Status>().ReverseMap();
     }
 
   }

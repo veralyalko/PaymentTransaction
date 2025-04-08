@@ -24,6 +24,7 @@ builder.Services.AddScoped<ICurrencyRepository, SQLCurrencyRepository>();
 builder.Services.AddScoped<IStatusRepository, SQLStatusRepository>();
 builder.Services.AddScoped<IPaymentMethodRepository, SQLPaymentMethodRepository>();
 builder.Services.AddScoped<ITransactionRepository, SQLTransactionRepository>();
+builder.Services.AddScoped<IStatusRepository, SQLStatusRepository>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
