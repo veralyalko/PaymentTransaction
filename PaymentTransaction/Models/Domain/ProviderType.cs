@@ -7,6 +7,6 @@ namespace PaymentTransaction.Models.Domain
     {
         PayPal = 1,
         Trustly = 2,
-        OtherProvider = 3
+        BitPay = 3
     }
 }
