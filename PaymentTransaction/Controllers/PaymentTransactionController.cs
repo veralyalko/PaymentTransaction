@@ -94,10 +94,13 @@ namespace PatmentTransactions.AddControllers
       [FromQuery] string? filterOn,
       [FromQuery] string? filterQuery,
       [FromQuery] DateTime? fromDate,
-      [FromQuery] DateTime? toDate)
+      [FromQuery] DateTime? toDate,
+      [FromQuery] string? sortBy,
+      [FromQuery] bool isAssending
+      )
     {
       // Get Data from Database - Domain Models
-      var transaction = await transactionRepository.GetAllAsync(filterOn, filterQuery, fromDate, toDate);
+      var transaction = await transactionRepository.GetAllAsync(filterOn, filterQuery, fromDate, toDate, sortBy, isAssending);
 
       // Map Domains to DTOs (automapper)
       var transactionDto = mapper.Map<List<TransactionDto>>(transaction);

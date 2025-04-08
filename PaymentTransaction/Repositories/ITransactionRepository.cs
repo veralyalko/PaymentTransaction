@@ -11,7 +11,9 @@ namespace PaymentTransaction.Repositories
     string? filterOn = null,
     string? filterQuery = null,
     DateTime? fromDate = null,
-    DateTime? toDate = null);
+    DateTime? toDate = null,
+    string? sortBy = null,
+    bool isAssending = true);
 
     Task<Transaction?> GetByIdAsync(Guid id);
     Task<Transaction?> DeleteAsync(Guid id);

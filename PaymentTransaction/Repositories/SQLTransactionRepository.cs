@@ -24,7 +24,9 @@ namespace PaymentTransaction.Repositories
       string? filterOn = null, 
       string? filterQuery = null,
       DateTime? fromDate = null,
-      DateTime? toDate = null)
+      DateTime? toDate = null,
+      string? sortBy = null,
+      bool isAssending = true)
     {
       var transaction = dbContext.Transaction
         .Include(t => t.Provider)
@@ -45,7 +47,7 @@ namespace PaymentTransaction.Repositories
             // by Status
             if (filterOn.Equals("Status", StringComparison.OrdinalIgnoreCase))
             {
-                transaction = transaction.Where(t => t.Status.StatusName.Contains(filterQuery));
+              transaction = transaction.Where(t => t.Status.StatusName.Contains(filterQuery));
             }
 
 
@@ -54,7 +56,27 @@ namespace PaymentTransaction.Repositories
         // Filter Date range (from/to)
         if (fromDate.HasValue)
         {
-            transaction = transaction.Where(t => t.Timestamp >= fromDate.Value);
+          transaction = transaction.Where(t => t.Timestamp >= fromDate.Value);
+        }
+
+        // Add Sorting
+        if (string.IsNullOrWhiteSpace(sortBy) == false )
+        {
+          // By Status
+          if (sortBy.Equals("Status", StringComparison.OrdinalIgnoreCase))
+          {
+            transaction = isAssending ? transaction.OrderBy(t => t.Status.StatusName): 
+            transaction.OrderByDescending(t => t.Status.StatusName);
+            
+          }
+
+          // By ProviderName
+          if (sortBy.Equals("providerName", StringComparison.OrdinalIgnoreCase))
+          {
+            transaction = isAssending ? transaction.OrderBy(t => t.Provider.ProviderName): 
+            transaction.OrderByDescending(t => t.Provider.ProviderName);
+
+          }
         }
 
         if (toDate.HasValue)
