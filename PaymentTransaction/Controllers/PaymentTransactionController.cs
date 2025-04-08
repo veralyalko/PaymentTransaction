@@ -6,6 +6,7 @@ using PaymentTransaction.Models.Domain;
 using PaymentTransaction.Models.DTO;
 using PaymentTransaction.Repositories;
 using PaymentTransaction.Attributes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PaymentTransactions.Controllers
 {
@@ -30,6 +31,12 @@ namespace PaymentTransactions.Controllers
         this.mapper = mapper;
     }
 
+    
+    // o Maps incoming data to your normalized format
+    // o Stores the transaction in the database
+    // o Returns a success or error message
+
+    // Accepts raw transaction payloads from a specific provider
     [HttpPost("~/ingest/{providerName}")]
     [RequiresIdempotencyKeyHeader]
     [TypeFilter(typeof(IdempotencyFilter))]
@@ -92,7 +99,13 @@ namespace PaymentTransactions.Controllers
     }
 
 
+    // GET /transactions
+    // Returns all normalized transactions with optional filters:
+    // o ProviderName
+    // o Status
+    // o Date range (from/to)
     // Get All transactions
+
     // GET: https://localhost:7042/transactions
     [HttpGet]
     public async Task<IActionResult> GetAll(
@@ -182,6 +195,12 @@ namespace PaymentTransactions.Controllers
       return Ok(transactionDto);
     }
 
+    // GET /summary
+    // Returns:
+    // o Total number of transactions
+    // o Total volume per provider
+    // o Breakdown of statuses (Pending, Completed, Failed)
+
     // GET /transactions/summary
     // [HttpGet("summary")]
     [HttpPost("~/summary")]
@@ -190,6 +209,52 @@ namespace PaymentTransactions.Controllers
         var summary = await transactionRepository.GetSummaryAsync();
         return Ok(summary);
     }
+
+    // Simulate webhook-like behavior where providers "push" transaction payloads
+    [HttpPost("webhook/{providerName}")]
+    [AllowAnonymous]
+    [RequiresIdempotencyKeyHeader]
+    [TypeFilter(typeof(IdempotencyFilter))]
+    [ValidateModel]
+    public async Task<IActionResult> ReceiveWebhookAsync(
+        string providerName,
+        [FromBody] AddTransactionViaProviderNameDto transactionDto)
+    {
+        // Validate provider name
+        if (string.IsNullOrWhiteSpace(providerName))
+        {
+            return BadRequest("Provider name is required.");
+        }
+
+        if (providerName.Length > 50)
+        {
+            return BadRequest("Provider name must be 50 characters or fewer.");
+        }
+
+        // Get provider
+        var provider = await providerRepository.GetByNameAsync(providerName);
+        if (provider == null)
+        {
+            return NotFound($"Provider '{providerName}' not found.");
+        }
+
+        // Get the Idempotency-Key (trusted to exist and be valid due to filter)
+        var idempotencyKey = Request.Headers["Idempotency-Key"].ToString();
+
+        var transactionDomainModel = mapper.Map<Transaction>(transactionDto);
+        transactionDomainModel.Timestamp = DateTime.UtcNow;
+        transactionDomainModel.ProviderId = provider.ProviderId;
+        transactionDomainModel.IdempotencyKey = idempotencyKey;
+
+        transactionDomainModel = await transactionRepository.CreateForProviderAsync(providerName, transactionDomainModel);
+
+        var newTransactionDto = mapper.Map<TransactionDto>(transactionDomainModel);
+
+        return CreatedAtAction(nameof(GetById), new { id = newTransactionDto.Id }, newTransactionDto);
+    }
+
+
+
   }
 
 }
