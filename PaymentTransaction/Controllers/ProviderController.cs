@@ -7,6 +7,7 @@ using PaymentTransaction.Data;
 using PaymentTransaction.Models.Domain;
 using PaymentTransaction.Models.DTO;
 using PaymentTransaction.Repositories;
+using System.Text.Json;
 
 namespace PatmentTransactions.AddControllers
 {
@@ -92,7 +93,12 @@ namespace PatmentTransactions.AddControllers
       {
       // Map DTO to Model (automapper)
       var providerDomainModel = mapper.Map<Provider>(addProviderRequestDto);
-
+      
+      // Serialize MetadataJson to JSON if not null
+      if (addProviderRequestDto.MetadataJson != null)
+      {
+        providerDomainModel.MetadataJson = JsonSerializer.Serialize(addProviderRequestDto.MetadataJson);
+      }
 
       // Use Domain MOdel to create Provider
       providerDomainModel = await providerRepository.CreateAsync(providerDomainModel);

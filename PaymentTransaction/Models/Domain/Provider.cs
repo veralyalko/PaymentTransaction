@@ -1,19 +1,27 @@
-using System.Globalization;
-using Microsoft.Net.Http.Headers;
+
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace PaymentTransaction.Models.Domain
 {
-
-  public class Provider
+    public class Provider
     {
+        [SwaggerSchema(Description = "Unique identifier for the provider")]
         public Guid ProviderId { get; set; }
+        
+        [SwaggerSchemaExample("PayPal")]
         public required string ProviderName { get; set; }
 
-        // Constructor to initialize ProviderId with a new GUID
         public Provider()
         {
-            ProviderId = Guid.NewGuid();  // Automatically generate a new GUID
+            ProviderId = Guid.NewGuid(); 
         }
+
+        [SwaggerSchemaExample("PayPal")]
+        public ProviderType Type { get; set; }
+
+        // Provider Other Configurations
+        [SwaggerSchemaExample("{\"Config1\": \"Value1\", \"Config2\": \"Value2\"}")]
+        public string? MetadataJson { get; set; }
     }
 
 }

@@ -1,5 +1,5 @@
-
 using System.ComponentModel.DataAnnotations;
+using PaymentTransaction.Models.Domain;
 
 namespace PaymentTransaction.Models.DTO
 {
@@ -9,5 +9,7 @@ namespace PaymentTransaction.Models.DTO
     [Required]
     [MaxLength(50, ErrorMessage = "Provider Name has to be a maximum of 50 characters")]
     public required string ProviderName { get; set; }
+    public ProviderType Type { get; set; }
+    public string? MetadataJson { get; set; }
   }
 }

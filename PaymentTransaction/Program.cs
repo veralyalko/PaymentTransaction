@@ -4,6 +4,7 @@ using Microsoft.OpenApi.Models;
 using PaymentTransaction.Data;
 using PaymentTransaction.Mappings;
 using PaymentTransaction.Repositories;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,26 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// Register the Swagger generator with annotations support
+builder.Services.AddSwaggerGen(options =>
+{
+    options.EnableAnnotations(); // Enable processing of Swagger annotations
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Your API Title",
+        Description = "Your API Description"
+    });
+
+    // Include XML comments if you have them
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+    options.IncludeXmlComments(xmlPath);
+
+    // Register the custom schema filter
+    options.SchemaFilter<SwaggerSchemaExampleFilter>();
+});
 
 // Db Class DI
 builder.Services.AddDbContext<PaymentTransactionDbContext>(options =>
