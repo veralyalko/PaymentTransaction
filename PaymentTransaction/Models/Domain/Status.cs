@@ -9,7 +9,7 @@ namespace PaymentTransaction.Models.Domain
     public Guid StatusId { get; set; }
     public required string StatusName { get; set; }
 
-    // Constructor to initialize ProviderId with a new GUID
+    // Constructor to initialize StatusId with a new GUID
     public Status()
     {
       StatusId = Guid.NewGuid();  // Automatically generate a new GUID

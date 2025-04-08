@@ -19,7 +19,7 @@ namespace PaymentTransaction.Models.Domain
     public required DateTime Timestamp { get; set; }
     public required string PayerEmail { get; set; }
 
-    // Constructor to initialize ProviderId with a new GUID
+    // Constructor to initialize Id with a new GUID
     public Transaction()
     {
       Id = Guid.NewGuid();  // Automatically generate a new GUID

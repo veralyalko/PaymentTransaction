@@ -8,7 +8,7 @@ namespace PaymentTransaction.Models.Domain
 
     public Guid CurrencyId { get; set; }
     public required string CurrencyName { get; set; }
-    // Constructor to initialize ProviderId with a new GUID
+    // Constructor to initialize CurrencyId with a new GUID
     public Currency()
     {
       CurrencyId = Guid.NewGuid();  // Automatically generate a new GUID

@@ -18,7 +18,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<PaymentTransactionDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("PaymentTransactionConnectionString")));
 
+// Repository services
 builder.Services.AddScoped<IProviderRepository, SQLProviderRepository>();
+builder.Services.AddScoped<ICurrencyRepository, SQLCurrencyRepository>();
+builder.Services.AddScoped<IStatusRepository, SQLStatusRepository>();
+builder.Services.AddScoped<IPaymentMethodRepository, SQLPaymentMethodRepository>();
+builder.Services.AddScoped<ITransactionRepository, SQLTransactionRepository>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 

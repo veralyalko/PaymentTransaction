@@ -9,7 +9,7 @@ namespace PaymentTransaction.Models.Domain
     public Guid PaymentMethodId { get; set; }
     public required string PaymentMethodName { get; set; }
     
-    // Constructor to initialize ProviderId with a new GUID
+    // Constructor to initialize PaymentMethodId with a new GUID
     public PaymentMethod()
     {
       PaymentMethodId = Guid.NewGuid();  // Automatically generate a new GUID
