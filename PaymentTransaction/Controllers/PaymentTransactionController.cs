@@ -173,6 +173,15 @@ namespace PatmentTransactions.AddControllers
 
       return Ok(transactionDto);
     }
+
+    // GET /transactions/summary
+    // [HttpGet("summary")]
+    [HttpPost("~/summary")]
+    public async Task<IActionResult> GetSummary()
+    {
+        var summary = await transactionRepository.GetSummaryAsync();
+        return Ok(summary);
+    }
   }
 
 }

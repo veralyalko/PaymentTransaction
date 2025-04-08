@@ -130,6 +130,40 @@ namespace PaymentTransaction.Repositories
       return existingTransaction;
     }
 
+    public async Task<TransactionSummaryDto> GetSummaryAsync()
+    {
+        var transactions = dbContext.Transaction
+            .Include(t => t.Provider)
+            .Include(t => t.Status);
+
+        var totalTransactions = await transactions.CountAsync();
+
+        var volumePerProvider = await transactions
+            .GroupBy(t => t.Provider.ProviderName)
+            .Select(g => new ProviderVolumeDto
+            {
+                ProviderName = g.Key,
+                TotalAmount = g.Sum(t => t.Amount)
+            })
+            .ToListAsync();
+
+        var statusBreakdown = await transactions
+            .GroupBy(t => t.Status.StatusName)
+            .Select(g => new StatusBreakdownDto
+            {
+                StatusName = g.Key,
+                Count = g.Count()
+            })
+            .ToListAsync();
+
+        return new TransactionSummaryDto
+        {
+            TotalTransactions = totalTransactions,
+            VolumePerProvider = volumePerProvider,
+            StatusBreakdown = statusBreakdown
+        };
+    }
+
     
 
   }
