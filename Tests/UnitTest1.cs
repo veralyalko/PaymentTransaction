@@ -1,10 +1,12 @@
-﻿namespace PaymentTransaction.Tests;
-
-public class UnitTest1
+﻿using Xunit;
+namespace PaymentTransaction.Tests
 {
-    [Fact]
-    public void Test1()
+    public class UnitTest1
     {
-
+        [Fact]
+        public void Test1()
+        {
+            Assert.True(true);
+        }
     }
 }
