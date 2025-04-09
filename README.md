@@ -229,7 +229,7 @@ Abstract data access logic from controllers, using EF Core in `SQLProviderReposi
 
 ## Validators
 
-DTO validation is enforced using Data Annotations.
+DTO validation is enforced using Model Data Annotations for basic validations, while Transaction DTO validation is handled using FluentValidation for more complex and custom validation logic
 
 ---
 
