@@ -253,8 +253,6 @@ namespace PaymentTransactions.Controllers
         return CreatedAtAction(nameof(GetById), new { id = newTransactionDto.Id }, newTransactionDto);
     }
 
-
-
   }
 
 }

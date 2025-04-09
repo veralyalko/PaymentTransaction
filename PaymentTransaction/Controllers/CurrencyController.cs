@@ -31,7 +31,7 @@ namespace PaymentTransactions.Controllers
     // Get All Currencies
     // GET: https://localhost:7042/api/currencies
     [HttpGet]
-    [Authorize]
+    // [Authorize]
     public async Task<IActionResult> GetAll()
     {
       // Get Data from Database - Domain Models

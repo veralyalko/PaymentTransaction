@@ -82,14 +82,14 @@ builder.Services.AddSwaggerGen(options =>
     //     Description = "Enter JWT token with **Bearer** prefix. Example: `Bearer {token}`"
     // });
 
-    // API Key
-    options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
-    {
-        Name = "x-api-key",
-        Type = SecuritySchemeType.ApiKey,
-        In = ParameterLocation.Header,
-        Description = "Enter your API key in the `x-api-key` header."
-    });
+    // // API Key UNCOMMENT FOR AUTH TESTING!!!!!!!!!!
+    // options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+    // {
+    //     Name = "x-api-key",
+    //     Type = SecuritySchemeType.ApiKey,
+    //     In = ParameterLocation.Header,
+    //     Description = "Enter your API key in the `x-api-key` header."
+    // });
 
     // Apply both globally (so they’re available to all endpoints)
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -173,9 +173,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // JWT
-app.UseAuthentication(); 
-// API key or JWT
-app.UseMiddleware<CombinedAuthMiddleware>(); 
+// app.UseAuthentication(); 
+// API key or JWT UNCOMMENT FOR AUTH TESTING!!!!!!!!!
+// app.UseMiddleware<CombinedAuthMiddleware>(); 
 app.UseAuthorization();
 
 app.MapControllers();
