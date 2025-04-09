@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using PaymentTransaction.CustomActionFilters;
 using PaymentTransaction.Data;
 using PaymentTransaction.Models.Domain;
 using PaymentTransaction.Models.DTO;
@@ -14,6 +15,7 @@ namespace PaymentTransactions.Controllers
   // https://localhost:7042/api/currency
   [Route("api/[controller]")]
   [ApiController]
+  [DisableAutomaticValidationForController]
   public class CurrencyController: ControllerBase
   {
     private readonly PaymentTransactionDbContext dbContext;  

@@ -7,6 +7,7 @@ using PaymentTransaction.Models.DTO;
 using PaymentTransaction.Repositories;
 using PaymentTransaction.Attributes;
 using Microsoft.AspNetCore.Authorization;
+using FluentValidation;
 
 namespace PaymentTransactions.Controllers
 {
@@ -19,16 +20,20 @@ namespace PaymentTransactions.Controllers
     private readonly ITransactionRepository transactionRepository;
     private readonly IProviderRepository providerRepository;
     private readonly IMapper mapper;
+    private readonly IValidator<AddTransactionViaProviderNameDto> _validator;
+
 
     public PaymentTransactionController(PaymentTransactionDbContext dbContext, 
         ITransactionRepository transactionRepository, 
         IProviderRepository providerRepository,
-        IMapper mapper)
+        IMapper mapper,
+        IValidator<AddTransactionViaProviderNameDto> validator)
     {
         this.dbContext = dbContext;
         this.transactionRepository = transactionRepository;
         this.providerRepository = providerRepository;
         this.mapper = mapper;
+        _validator = validator;
     }
 
     
@@ -40,11 +45,21 @@ namespace PaymentTransactions.Controllers
     [HttpPost("~/ingest/{providerName}")]
     [RequiresIdempotencyKeyHeader]
     [TypeFilter(typeof(IdempotencyFilter))]
-    [ValidateModel]
+    // [ValidateModel] will use fluent validator instead
     public async Task<IActionResult> CreateForProviderAsync(
         string providerName,
         [FromBody] AddTransactionViaProviderNameDto addTransactionViaProviderNameDto)
     {
+        // Add Manual FluentValidation for async rules
+        var validationResult = await _validator.ValidateAsync(addTransactionViaProviderNameDto);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.Errors.Select(e => new
+            {
+                e.PropertyName,
+                e.ErrorMessage
+            }));
+        }
         // Cleaned-up version: idempotency is now handled by the filter!
 
         // Validate providerName
@@ -82,7 +97,7 @@ namespace PaymentTransactions.Controllers
     // POST To create a new Transaction
     // POST: https://localhost:7042/transactions
     [HttpPost]
-    [ValidateModel]
+    // [ValidateModel]
     public async Task<IActionResult> Create([FromBody]  AddTransactionRequestDto addTransactionRequestDto)
     {
       // Map DTO to Model (automapper)

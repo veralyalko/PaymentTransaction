@@ -10,12 +10,21 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using PaymentTransaction.Middleware;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using PaymentTransaction.Models.DTO;
+using PaymentTransaction.CustomActionFilters;
+using PaymentTransaction.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationExceptionFilter>();
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -124,7 +133,7 @@ builder.Services.AddDbContext<PaymentTransactionAuthDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("PaymentAuthConnectionString")));
 
 
-// Repository services
+// Register Repository services
 builder.Services.AddScoped<IProviderRepository, SQLProviderRepository>();
 builder.Services.AddScoped<ICurrencyRepository, SQLCurrencyRepository>();
 builder.Services.AddScoped<IStatusRepository, SQLStatusRepository>();
@@ -133,6 +142,18 @@ builder.Services.AddScoped<ITransactionRepository, SQLTransactionRepository>();
 builder.Services.AddScoped<IStatusRepository, SQLStatusRepository>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
+
+// Register Validators
+builder.Services.AddValidatorsFromAssemblyContaining<AddTransactionViaProviderNameDtoValidator>();
+
+
+// // AddTransactionRequestDtoValidator    
+// builder.Services.AddValidatorsFromAssemblyContaining<AddTransactionRequestDtoValidator>();
+// // UpdateTransactionRequestDtoValidator
+// builder.Services.AddValidatorsFromAssemblyContaining<UpdateTransactionRequestDtoValidator>();
+// AddTransactionViaProviderNameDtoValidator
+builder.Services.AddValidatorsFromAssemblyContaining<AddTransactionViaProviderNameDtoValidator>();
+
 
 var jwtKey = builder.Configuration["Jwt:Key"] 
              ?? throw new InvalidOperationException("JWT Key is not configured");
