@@ -83,6 +83,26 @@ dotnet test ./Tests/PaymentTransaction.Tests.csproj
 
 ## API Documentation
 
+### Transaction
+
+- `POST /ingest/{providerName}` (Requires `Idempotency-Key`)
+- `POST /api/transaction`
+- `GET /api/transaction/{id}`
+- `PUT /api/transaction/{id}`
+- `DELETE /api/transaction/{id}`
+
+- Example provider payloads
+- providerName required string (path) PayPal
+- Idempotency-Key required string GUID (header) 
+```json
+{
+  "amount": 0.01,
+  "payerEmail": "user@example.com",
+  "currencyId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "statusId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "paymentMethodId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+```
 ### Status
 
 - `GET /api/status`
@@ -114,27 +134,6 @@ dotnet test ./Tests/PaymentTransaction.Tests.csproj
 - `POST /api/providers`
 - `PUT /api/providers/{id}`
 - `DELETE /api/providers/{id}`
-
-### Transaction
-
-- `POST /ingest/{providerName}` (Requires `Idempotency-Key`)
-- `POST /api/transaction`
-- `GET /api/transaction/{id}`
-- `PUT /api/transaction/{id}`
-- `DELETE /api/transaction/{id}`
-
-Example provider payloads
-providerName required string (path) PayPal
-Idempotency-Key required string GUID (header) 
-```json
-{
-  "amount": 0.01,
-  "payerEmail": "user@example.com",
-  "currencyId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "statusId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "paymentMethodId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-}
-```
 
 ### Summary
 
