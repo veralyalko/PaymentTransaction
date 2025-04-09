@@ -1,5 +1,5 @@
 # PaymentTransaction Challenge Task
-### CHallenge Task
+### Challenge Task
 A service that ingests payment transaction data from multiple external providers (e.g., PayPal, Trustly, BitPay), normalizes the data, stores it internally, and exposes it via an internal API for other systems to consume.
 ### Note
 While this solution provides a working implementation of the required features—including provider-based ingestion, normalized data storage, Swagger documentation, unit testing, API key authentication, and idempotency handling—there is still significant room for improvement. Additional validations, stricter input checks, and provider-specific logic could further enhance the reliability and robustness of the system.
