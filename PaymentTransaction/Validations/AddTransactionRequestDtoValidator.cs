@@ -11,7 +11,7 @@ namespace PaymentTransaction.Validators
 
         public AddTransactionRequestDtoValidator(PaymentTransactionDbContext dbContext)
         {
-          this.dbContext = dbContext;
+            this.dbContext = dbContext;
         }
         public AddTransactionRequestDtoValidator()
         {
@@ -26,27 +26,27 @@ namespace PaymentTransaction.Validators
              RuleFor(x => x.CurrencyId)
             .MustAsync(CurrencyExists).WithMessage("CurrencyId is not valid.");
 
-        RuleFor(x => x.StatusId)
-            .MustAsync(StatusExists).WithMessage("StatusId is not valid.");
+            RuleFor(x => x.StatusId)
+                .MustAsync(StatusExists).WithMessage("StatusId is not valid.");
 
-        RuleFor(x => x.PaymentMethodId)
-            .MustAsync(PaymentMethodExists).WithMessage("PaymentMethodId is not valid.");
+            RuleFor(x => x.PaymentMethodId)
+                .MustAsync(PaymentMethodExists).WithMessage("PaymentMethodId is not valid.");
 
-        RuleFor(x => x.PaymentMethodId)
-            .MustAsync(ProviderExists).WithMessage("Provider is not valid.");
+            RuleFor(x => x.PaymentMethodId)
+                .MustAsync(ProviderExists).WithMessage("Provider is not valid.");
 
         }
 
         private async Task<bool> CurrencyExists(Guid id, CancellationToken ct) =>
         await dbContext.Currency.AnyAsync(c => c.CurrencyId == id, ct);
 
-      private async Task<bool> StatusExists(Guid id, CancellationToken ct) =>
-          await dbContext.Status.AnyAsync(s => s.StatusId == id, ct);
+        private async Task<bool> StatusExists(Guid id, CancellationToken ct) =>
+            await dbContext.Status.AnyAsync(s => s.StatusId == id, ct);
 
-      private async Task<bool> PaymentMethodExists(Guid id, CancellationToken ct) =>
-          await dbContext.PaymentMethod.AnyAsync(p => p.PaymentMethodId == id, ct);
+        private async Task<bool> PaymentMethodExists(Guid id, CancellationToken ct) =>
+            await dbContext.PaymentMethod.AnyAsync(p => p.PaymentMethodId == id, ct);
 
-      private async Task<bool> ProviderExists(Guid id, CancellationToken ct) =>
-          await dbContext.Provider.AnyAsync(p => p.ProviderId == id, ct);
+        private async Task<bool> ProviderExists(Guid id, CancellationToken ct) =>
+            await dbContext.Provider.AnyAsync(p => p.ProviderId == id, ct);
     }
 }

@@ -5,6 +5,7 @@ using System.Text.Json;
 
 namespace PaymentTransaction.Attributes
 {
+  
   /// <summary>
   /// A filter that applies examples to the Swagger schema for properties annotated with <see cref="SwaggerSchemaExampleAttribute"/>.
   /// </summary>

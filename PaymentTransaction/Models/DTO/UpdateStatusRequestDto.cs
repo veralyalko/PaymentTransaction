@@ -1,9 +1,7 @@
-
 using System.ComponentModel.DataAnnotations;
 
 namespace PaymentTransaction.Models.DTO
 {
-
   public class UpdateStatusRequestDto {
 
     [Required]

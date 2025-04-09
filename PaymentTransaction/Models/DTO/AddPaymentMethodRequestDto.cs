@@ -3,11 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PaymentTransaction.Models.DTO
 {
+    public class AddPaymentMethodRequestDto {
 
-  public class AddPaymentMethodRequestDto {
-
-    [Required]
-    [MaxLength(30, ErrorMessage = "Payment Method Name has to be a maximum of 30 characters")]
-    public required string PaymentMethodName { get; set; }
-  }
+      [Required]
+      [MaxLength(30, ErrorMessage = "Payment Method Name has to be a maximum of 30 characters")]
+      public required string PaymentMethodName { get; set; }
+    }
 }

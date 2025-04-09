@@ -3,7 +3,6 @@ using PaymentTransaction.Models.Domain;
 
 namespace PaymentTransaction.Models.DTO
 {
-
   public class UpdateProviderRequestDto {
 
     [Required]

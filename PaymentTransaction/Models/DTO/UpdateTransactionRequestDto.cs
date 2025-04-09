@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PaymentTransaction.Models.DTO
 {
   public class UpdateTransactionRequestDto {
+    
     [Required]
     [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be a valid number, greater than 0.")]
     public required double Amount { get; set; }

@@ -5,32 +5,31 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PaymentTransaction.Models.Domain
 {
+    public class Transaction {
 
-  public class Transaction {
+        public Guid Id { get; set; }
+        public required Guid ProviderId { get; set; }
+        public required double Amount { get; set; }
+        public required Guid CurrencyId { get; set; }
+        public required Guid PaymentMethodId { get; set; }
+        public required Guid StatusId { get; set; }
 
-    public Guid Id { get; set; }
-    public required Guid ProviderId { get; set; }
-    public required double Amount { get; set; }
-    public required Guid CurrencyId { get; set; }
-    public required Guid PaymentMethodId { get; set; }
-    public required Guid StatusId { get; set; }
+        // [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public required DateTime Timestamp { get; set; }
+        public required string PayerEmail { get; set; }
 
-    // [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    public required DateTime Timestamp { get; set; }
-    public required string PayerEmail { get; set; }
+        // Constructor to initialize Id with a new GUID
+        public Transaction()
+        {
+            Id = Guid.NewGuid();  // Automatically generate a new GUID
+        }
 
-    // Constructor to initialize Id with a new GUID
-    public Transaction()
-    {
-      Id = Guid.NewGuid();  // Automatically generate a new GUID
+        // Navigation Property
+        public required Provider Provider { get; set; }
+        public required Currency Currency { get; set; }
+        public required PaymentMethod PaymentMethod { get; set; }
+        public required Status Status { get; set; }
+        public required string IdempotencyKey { get; set; }
+      
     }
-
-    // Navigation Property
-    public required Provider Provider { get; set; }
-    public required Currency Currency { get; set; }
-    public required PaymentMethod PaymentMethod { get; set; }
-    public required Status Status { get; set; }
-    public required string IdempotencyKey { get; set; }
-    
-  }
 }
