@@ -91,7 +91,7 @@ dotnet test ./Tests/PaymentTransaction.Tests.csproj
 - `PUT /api/transaction/{id}`
 - `DELETE /api/transaction/{id}`
 
-- Example provider payloads
+Example provider payloads
 - providerName required string (path) PayPal
 - Idempotency-Key required string GUID (header) 
 ```json
