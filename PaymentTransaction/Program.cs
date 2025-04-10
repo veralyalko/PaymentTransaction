@@ -15,6 +15,10 @@ using FluentValidation.AspNetCore;
 using PaymentTransaction.Models.DTO;
 using PaymentTransaction.CustomActionFilters;
 using PaymentTransaction.Validators;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using PaymentTransaction;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -172,7 +176,28 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 Encoding.UTF8.GetBytes(jwtKey))
         });
 
+// Register versioning service
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+
+    // Force Version via URL Path
+    options.ApiVersionReader = new UrlSegmentApiVersionReader();
+});
+
+// Inject ConfigureSwaggerOptions as a Service into Services
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 var app = builder.Build();
+
+var versionDescriptionProvider = 
+    app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
 // Dev Ex Page
 if (app.Environment.IsDevelopment())
@@ -188,8 +213,19 @@ else
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+        {
+          foreach (var description in versionDescriptionProvider.ApiVersionDescriptions)
+          {
+              options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+              description.GroupName.ToUpperInvariant());
+          }
+        }
+    );
 }
+
+// Add Global Exception handler middleware
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 

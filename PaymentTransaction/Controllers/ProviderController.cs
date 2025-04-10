@@ -36,6 +36,7 @@ namespace PaymentTransactions.Controllers
         // Get All Providers
         // GET: https://localhost:7042/api/providers
         [HttpGet]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetAll()
         {
             // Get Data from Database - Domain Models
@@ -64,6 +65,7 @@ namespace PaymentTransactions.Controllers
         // GET: https://localhost:7042/api/providers/{id}
         [HttpGet]
         [Route("{id:Guid}")]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetById(Guid id)
         {
             // Get Provider Model From DB
@@ -91,6 +93,7 @@ namespace PaymentTransactions.Controllers
         // POST To create a new Provider
         // POST: https://localhost:7042/api/providers
         [HttpPost]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> Create([FromBody]  AddProviderRequestDto addProviderRequestDto)
         {
 
@@ -123,6 +126,7 @@ namespace PaymentTransactions.Controllers
         // PUT: https://localhost:7042/api/providers/{id}
         [HttpPut]
         [Route("{id:Guid}")]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> Update([FromRoute] Guid id, 
           [FromBody] UpdateProviderRequestDto updateProviderRequestDto)
         {
@@ -154,6 +158,7 @@ namespace PaymentTransactions.Controllers
         // DELETE: https://localhost:7042/api/providers/{id}
         [HttpDelete]
         [Route("{id:Guid}")]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             // Check for provider exists

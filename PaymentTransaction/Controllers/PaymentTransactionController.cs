@@ -15,6 +15,7 @@ namespace PaymentTransactions.Controllers
     // https://localhost:7042/api/transactions
     [Route("transactions")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class PaymentTransactionController: ControllerBase
     {
         private readonly PaymentTransactionDbContext dbContext;  
@@ -46,11 +47,13 @@ namespace PaymentTransactions.Controllers
         [HttpPost("~/ingest/{providerName}")]
         [RequiresIdempotencyKeyHeader]
         [TypeFilter(typeof(IdempotencyFilter))]
+        [MapToApiVersion("1.0")]
         // [ValidateModel] will use fluent validator instead
         public async Task<IActionResult> CreateForProviderAsync(
             string providerName,
             [FromBody] AddTransactionViaProviderNameDto addTransactionViaProviderNameDto)
         {
+  
             // Add Manual FluentValidation for async rules
             var validationResult = await _validator.ValidateAsync(addTransactionViaProviderNameDto);
             if (!validationResult.IsValid)
@@ -98,6 +101,7 @@ namespace PaymentTransactions.Controllers
         // POST To create a new Transaction
         // POST: https://localhost:7042/transactions
         [HttpPost]
+        [MapToApiVersion("1.0")]
         // [ValidateModel]
         public async Task<IActionResult> Create([FromBody]  AddTransactionRequestDto addTransactionRequestDto)
         {
@@ -124,6 +128,7 @@ namespace PaymentTransactions.Controllers
 
         // GET: https://localhost:7042/transactions
         [HttpGet]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetAll(
           [FromQuery] string? filterOn,
           [FromQuery] string? filterQuery,
@@ -148,6 +153,7 @@ namespace PaymentTransactions.Controllers
         // GET: https://localhost:7042/transactions/{id}
         // GET /transactions/{id}
         [HttpGet("{id:Guid}")]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetById(Guid id)
         {
             // Get Transaction Model From DB
@@ -170,6 +176,7 @@ namespace PaymentTransactions.Controllers
         // PUT /transactions/{id}
         [HttpPut("{id:Guid}")]
         [ValidateModel]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> Update([FromRoute] Guid id, 
           [FromBody] UpdateTransactionRequestDto updateTransactionRequestDto)
         {
@@ -194,6 +201,7 @@ namespace PaymentTransactions.Controllers
         // DELETE: https://localhost:7042/transactions/{id}
         // DELETE /transactions/{id}
         [HttpDelete("{id:Guid}")]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             // Check for transaction exists
@@ -220,6 +228,7 @@ namespace PaymentTransactions.Controllers
         // GET /transactions/summary
         // [HttpGet("summary")]
         [HttpPost("~/summary")]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetSummary()
         {
             var summary = await transactionRepository.GetSummaryAsync();
@@ -232,6 +241,7 @@ namespace PaymentTransactions.Controllers
         [RequiresIdempotencyKeyHeader]
         [TypeFilter(typeof(IdempotencyFilter))]
         [ValidateModel]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> ReceiveWebhookAsync(
             string providerName,
             [FromBody] AddTransactionViaProviderNameDto transactionDto)

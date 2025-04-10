@@ -11,7 +11,6 @@ using PaymentTransaction.Repositories;
 
 namespace PaymentTransactions.Controllers
 {
-  
     // https://localhost:7042/api/status
     [Route("api/[controller]")]
     [ApiController]
@@ -33,8 +32,12 @@ namespace PaymentTransactions.Controllers
         // Get All Statuses
         // GET: https://localhost:7042/api/status
         [HttpGet]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetAll()
         {
+            // // Test GLobal Exception working: TEST ONLY. COMMENT OUT
+            // throw new Exception("This is Demo exception");
+
             // Get Data from Database - Domain Models
             var status = await statusRepository.GetAllAsync();
 
@@ -50,6 +53,7 @@ namespace PaymentTransactions.Controllers
         // GET: https://localhost:7042/api/status/{id}
         [HttpGet]
         [Route("{id:Guid}")]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetById(Guid id)
         {
             // Get Status Model From DB
@@ -70,6 +74,7 @@ namespace PaymentTransactions.Controllers
         // POST To create a new Status
         // POST: https://localhost:7042/api/status
         [HttpPost]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> Create([FromBody]  AddStatusRequestDto addStatusRequestDto)
         {
             if (ModelState.IsValid) 
@@ -96,6 +101,7 @@ namespace PaymentTransactions.Controllers
         // PUT: https://localhost:7042/api/status/{id}
         [HttpPut]
         [Route("{id:Guid}")]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> Update([FromRoute] Guid id, 
           [FromBody] UpdateStatusRequestDto updateStatusRequestDto)
         {
@@ -127,6 +133,7 @@ namespace PaymentTransactions.Controllers
         // DELETE: https://localhost:7042/api/status/{id}
         [HttpDelete]
         [Route("{id:Guid}")]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             // Check for status exists

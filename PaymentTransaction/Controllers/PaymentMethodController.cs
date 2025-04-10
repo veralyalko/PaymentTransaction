@@ -33,6 +33,7 @@ namespace PaymentTransactions.Controllers
         // Get All Payment Methods
         // GET: https://localhost:7042/api/paymentmethod
         [HttpGet]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetAll()
         {
             // Get Data from Database - Domain Models
@@ -50,6 +51,7 @@ namespace PaymentTransactions.Controllers
         // GET: https://localhost:7042/api/paymentmethods/{id}
         [HttpGet]
         [Route("{id:Guid}")]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetById(Guid id)
         {
             // Get PaymentMethod Model From DB
@@ -70,6 +72,7 @@ namespace PaymentTransactions.Controllers
         // POST To create a new payment method type
         // POST: https://localhost:7042/api/paymentmethod
         [HttpPost]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> Create([FromBody]  AddPaymentMethodRequestDto addPaymentMethodRequestDto)
         {
             if (ModelState.IsValid) {
@@ -95,6 +98,7 @@ namespace PaymentTransactions.Controllers
         // PUT: https://localhost:7042/api/paymentmethod/{id}
         [HttpPut]
         [Route("{id:Guid}")]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> Update([FromRoute] Guid id, 
           [FromBody] UpdatePaymentMethodRequestDto updatePaymentMethodRequestDto)
         {
@@ -125,6 +129,7 @@ namespace PaymentTransactions.Controllers
         // DELETE: https://localhost:7042/api/paymentmethod/{id}
         [HttpDelete]
         [Route("{id:Guid}")]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             // Check for PaymentMethod exists
