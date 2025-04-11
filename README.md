@@ -253,6 +253,21 @@ Custom attributes to enhance Swagger docs and enforce headers like `Idempotency-
 
 ---
 
+## Global Exception Handling
+Implemented a custom middleware (ExceptionHandlerMiddleware) to catch unhandled exceptions, log error details, and return a standardized JSON error response.
+
+---
+
+## Versioning
+Configured API versioning using AddApiVersioning() and optional IApiVersionDescriptionProvider for managing and documenting multiple API versions.
+
+---
+
+## Serilog
+Integrated Serilog for structured logging with output to both console and rolling log files to aid in diagnostics and monitoring.
+
+---
+
 ## Dependency Injection
 
 ASP.NET Core DI is used for injecting DbContext, repositories, and AutoMapper.
