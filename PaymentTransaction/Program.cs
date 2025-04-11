@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using PaymentTransaction;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -194,6 +195,17 @@ builder.Services.AddVersionedApiExplorer(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/app_log.txt", rollingInterval: RollingInterval.Day)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+// Use Serilog for logging
+builder.Host.UseSerilog();
+
 var app = builder.Build();
 
 var versionDescriptionProvider = 

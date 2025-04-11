@@ -23,19 +23,21 @@ namespace PaymentTransactions.Controllers
         private readonly IProviderRepository providerRepository;
         private readonly IMapper mapper;
         private readonly IValidator<AddTransactionViaProviderNameDto> _validator;
-
+        private readonly ILogger<ProviderController> logger;
 
         public PaymentTransactionController(PaymentTransactionDbContext dbContext, 
             ITransactionRepository transactionRepository, 
             IProviderRepository providerRepository,
             IMapper mapper,
-            IValidator<AddTransactionViaProviderNameDto> validator)
+            IValidator<AddTransactionViaProviderNameDto> validator,
+            ILogger<ProviderController> logger)
         {
             this.dbContext = dbContext;
             this.transactionRepository = transactionRepository;
             this.providerRepository = providerRepository;
             this.mapper = mapper;
             _validator = validator;
+            this.logger = logger;
         }
 
         
@@ -54,6 +56,8 @@ namespace PaymentTransactions.Controllers
             [FromBody] AddTransactionViaProviderNameDto addTransactionViaProviderNameDto)
         {
   
+            logger.LogInformation("Payment Transaction Controller: CreateForProviderAsync endpoint is hit. Serilog is working {Time}", DateTime.UtcNow);
+
             // Add Manual FluentValidation for async rules
             var validationResult = await _validator.ValidateAsync(addTransactionViaProviderNameDto);
             if (!validationResult.IsValid)
@@ -138,6 +142,9 @@ namespace PaymentTransactions.Controllers
           [FromQuery] bool isAssending
           )
         {
+          // Logging test
+          logger.LogInformation("Payment Transaction Controller: GetAll endpoint is hit. Serilog is working {Time}", DateTime.UtcNow);
+
           // Get Data from Database - Domain Models
           var transaction = await transactionRepository.GetAllAsync(filterOn, filterQuery, fromDate, toDate, sortBy, isAssending);
 

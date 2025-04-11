@@ -23,14 +23,17 @@ namespace PaymentTransactions.Controllers
     {
         private readonly PaymentTransactionDbContext dbContext;  
         private readonly IProviderRepository providerRepository;
-
         private readonly IMapper mapper;
+        private readonly ILogger<ProviderController> logger;
         public ProviderController(PaymentTransactionDbContext dbContext, IProviderRepository providerRepository, 
-          IMapper mapper)
+          IMapper mapper,
+          ILogger<ProviderController> logger
+          )
         {
             this.dbContext = dbContext;
             this.providerRepository = providerRepository;
             this.mapper = mapper;
+            this.logger = logger;
         }
 
         // Get All Providers
@@ -39,6 +42,9 @@ namespace PaymentTransactions.Controllers
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetAll()
         {
+            // Logging test
+            logger.LogInformation("Provider Controller: GetAll endpoint hit. Serilog is working {Time}", DateTime.UtcNow);
+
             // Get Data from Database - Domain Models
             var providers = await providerRepository.GetAllAsync();
 
