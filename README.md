@@ -111,6 +111,12 @@ Example provider payloads
 - `PUT /api/status/{id}`
 - `DELETE /api/status/{id}`
 
+Example Status data
+```json
+{
+  "statusName": "Failed"
+}
+```
 ### Currency
 
 - `GET /api/currency`
@@ -118,6 +124,13 @@ Example provider payloads
 - `POST /api/currency`
 - `PUT /api/currency/{id}`
 - `DELETE /api/currency/{id}`
+
+Example Currency data
+```json
+{
+  "currencyName": "USD"
+}
+```
 
 ### Payment Method
 
@@ -127,6 +140,13 @@ Example provider payloads
 - `PUT /api/paymentmethod/{id}`
 - `DELETE /api/paymentmethod/{id}`
 
+Example Payment Method data
+```json
+{
+  "paymentMethodName": "Wallet"
+}
+```
+
 ### Provider
 
 - `GET /api/providers`
@@ -134,6 +154,24 @@ Example provider payloads
 - `POST /api/providers`
 - `PUT /api/providers/{id}`
 - `DELETE /api/providers/{id}`
+
+Example Provider data
+1. PayPal:
+```json
+{
+ "providerName": "PayPal",
+  "type": "PayPal",
+  "metadataJson": "{\"Mode\":\"test\",\"defaultCurrency\":\"USD\"}"
+}
+```
+2. Trustly:
+```json
+{
+  "providerName": "Trustly",
+  "type": "Trustly",
+  "metadataJson": "{\"Region\":\"EU\",\"Currency\":\"EUR\"}"
+}
+```
 
 ### Summary
 
@@ -202,9 +240,16 @@ Tests/
 
 EF Core migration files created with:
 
+To add a new migration, use:
 ```bash
 dotnet ef migrations add <MigrationName>
 dotnet ef database update
+```
+
+To apply the existing migration to the database run:
+```bash
+dotnet ef database update --context PaymentTransactionDbContext
+dotnet ef database update --context PaymentTransactionAuthDbContext
 ```
 
 ---
